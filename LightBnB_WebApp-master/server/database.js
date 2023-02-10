@@ -246,10 +246,71 @@ exports.getAllProperties = getAllProperties;
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
-const addProperty = function(property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+// const addProperty = function(property) {
+//   const propertyId = Object.keys(properties).length + 1;
+//   property.id = propertyId;
+//   properties[propertyId] = property;
+//   return Promise.resolve(property);
+// }
+
+const addProperty = (property) => {
+  return pool
+    .query(`
+    INSERT INTO properties (
+      title,
+      description,
+      owner_id,
+      cover_photo_url,
+      thumbnail_photo_url,
+      cost_per_night,
+      parking_spaces,
+      number_of_bathrooms,
+      number_of_bedrooms,
+      active,
+      province,
+      city,
+      country,
+      street,
+      post_code
+      )
+      VALUES (
+        $1, /* title */
+        $2, /* description */
+        $3, /* owner_id */
+        $4, /* cover_photo_url */
+        $5, /* thumbnail_photo_url */
+        $6, /* cost_per_night */
+        $7, /* parking_spaces */
+        $8, /* number_of_bathrooms */
+        $9, /* number_of_bedrooms */
+        $10, /* active */
+        $11, /* province */
+        $12, /* city */
+        $13, /* country */
+        $14, /* street */
+        $15 /* post_code */
+      ) RETURNING *;
+    `, [
+      property.title,
+      property.description,
+      property.owner_id,
+      property.cover_photo_url,
+      property.thumbnail_photo_url,
+      property.cost_per_night,
+      property.parking_spaces,
+      property.number_of_bathrooms,
+      property.number_of_bedrooms,
+      true,
+      property.province,
+      property.city,
+      property.country,
+      property.street,
+      property.post_code
+    ])
+    .then((result) => {
+      console.log(result.rows);
+      return result.rows;
+    });
 }
+
 exports.addProperty = addProperty;
